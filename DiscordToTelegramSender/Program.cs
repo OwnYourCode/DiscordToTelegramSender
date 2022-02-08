@@ -9,6 +9,13 @@ using Telegram.Bot;
 // start to build application
 var builder = WebApplication.CreateBuilder(args);
 
+// Heroku port
+var port = Environment.GetEnvironmentVariable("PORT");
+if (!string.IsNullOrEmpty(port))
+{
+    builder.WebHost.UseUrls("http://*:" + port);
+}
+
 // services config
 ConfigureSettings(builder);
 AddTelegramBot(builder);
