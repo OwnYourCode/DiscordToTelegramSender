@@ -1,9 +1,11 @@
 using Discord.WebSocket;
+using DiscordToTelegramSender;
 using DiscordToTelegramSender.Services.Background;
 using DiscordToTelegramSender.Services.Discord;
 using DiscordToTelegramSender.Services.Telegram;
 using DiscordToTelegramSender.Settings;
 using Microsoft.Extensions.Options;
+using Polly;
 using Telegram.Bot;
 
 // start to build application
@@ -20,9 +22,22 @@ if (!string.IsNullOrEmpty(port))
 ConfigureSettings(builder);
 AddTelegramBot(builder);
 AddDiscordBot(builder);
+
 builder.Services.AddHostedService<PipelineRunner>();
+builder.Services.AddControllers();
+
+builder.Services
+       .AddHttpClient<PingService>()
+       .AddTransientHttpErrorPolicy(q => q.WaitAndRetryForeverAsync(_ => TimeSpan.FromMinutes(5)));
 
 var app = builder.Build();
+
+app.UseStaticFiles();
+app.UseDefaultFiles();
+
+app.UseRouting();
+
+app.UseEndpoints(configs => configs.MapControllers());
 
 // run application
 app.Run();

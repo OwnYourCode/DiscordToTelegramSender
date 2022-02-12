@@ -1,31 +1,29 @@
 ﻿using DiscordToTelegramSender.Services.Discord;
-using DiscordToTelegramSender.Settings;
-using Microsoft.Extensions.Options;
 
 namespace DiscordToTelegramSender.Services.Background;
 
 public class PipelineRunner : BackgroundService
 {
     private readonly IDiscordService _discordService;
+    private readonly PingService _pingService;
     private readonly ILogger<PipelineRunner> _logger;
-    private readonly IOptions<DiscordSettings> _options;
 
-    public PipelineRunner(ILogger<PipelineRunner> logger, IOptions<DiscordSettings> options, IDiscordService discordService)
+    public PipelineRunner(ILogger<PipelineRunner> logger, IDiscordService discordService, PingService pingService)
     {
         _discordService = discordService;
+        _pingService = pingService;
         _logger = logger;
-        _options = options;
     }
 
-    public override Task StartAsync(CancellationToken cancellationToken)
+    public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Service was started. Token: {Token}", _options.Value?.Token);
-        return _discordService.StartDiscord();
+        await _discordService.StartDiscord();
+        await base.StartAsync(cancellationToken);
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        return Task.CompletedTask;
+        return _pingService.Ping();
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)
