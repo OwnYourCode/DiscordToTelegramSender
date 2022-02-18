@@ -12,11 +12,11 @@ public class PingController : ControllerBase
     {
         _logger = logger;
     }
-    
+
     [HttpGet]
     public IActionResult Ping()
     {
         _logger.LogInformation("Start ping");
-        return StatusCode(500);
+        return Ok();
     }
 }

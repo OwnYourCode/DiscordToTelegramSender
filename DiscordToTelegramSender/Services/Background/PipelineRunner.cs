@@ -5,13 +5,11 @@ namespace DiscordToTelegramSender.Services.Background;
 public class PipelineRunner : BackgroundService
 {
     private readonly IDiscordService _discordService;
-    private readonly PingService _pingService;
     private readonly ILogger<PipelineRunner> _logger;
 
-    public PipelineRunner(ILogger<PipelineRunner> logger, IDiscordService discordService, PingService pingService)
+    public PipelineRunner(ILogger<PipelineRunner> logger, IDiscordService discordService)
     {
         _discordService = discordService;
-        _pingService = pingService;
         _logger = logger;
     }
 
@@ -23,7 +21,7 @@ public class PipelineRunner : BackgroundService
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        return _pingService.Ping();
+        return Task.CompletedTask;
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)

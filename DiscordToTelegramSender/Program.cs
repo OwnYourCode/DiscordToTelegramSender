@@ -26,10 +26,6 @@ AddDiscordBot(builder);
 builder.Services.AddHostedService<PipelineRunner>();
 builder.Services.AddControllers();
 
-builder.Services
-       .AddHttpClient<PingService>()
-       .AddTransientHttpErrorPolicy(q => q.WaitAndRetryForeverAsync(_ => TimeSpan.FromMinutes(5)));
-
 var app = builder.Build();
 
 app.UseStaticFiles();
